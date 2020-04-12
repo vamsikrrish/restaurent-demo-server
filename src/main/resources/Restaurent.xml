@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "Restaurent">
+
+	<resultMap id = "restaurentMap" type = "com.example.restaurentService.Restaurent">
+	
+	   <result property = "id" column = "id"/>
+	   <result property = "name" column = "name"/>
+	   <result property = "location" column = "location"/>
+	   <result property = "categoryName" column = "category_name"/>
+	   <result property = "price" column = "price"/>
+	   <result property = "denomination" column = "denomination"/>
+	   <result property = "rating" column = "rating"/>
+	</resultMap>
+
+	 <select id = "getAllRestaurents"  resultMap = "restaurentMap">
+		select rest.*,cat.name as category_name from restaurent rest join categories cat on cat.id=rest.category
+				
+	 <where >
+	 	true
+		<if test="searchTerm!=null">
+			and 
+			(
+			rest.name ILIKE '%' || #{searchTerm} || '%' 
+			or rest.tags ILIKE '%' || #{searchTerm} || '%'
+			or cat.name ILIKE '%' || #{searchTerm} || '%'
+			)
+		</if>
+		<if test="category!=null">
+			and cat.id in (${category})
+		</if>
+		<if test="minPrice!=null">
+			and rest.price &gt;= #{minPrice}::integer
+		</if>
+		<if test="maxPrice!=null">
+			and rest.price &lt;= #{maxPrice}::integer
+		</if>
+		<if test="rating!=null">
+			and rest.rating in (${rating})
+		</if>
+	 </where>
+		 <if test="sortBy!=null">
+			 order by ${sortBy}
+		</if>
+		<if test="offset!=null">
+			offset ${offset}
+		</if>
+		<if test="limit!=null">
+			limit ${limit}
+		</if>
+
+		
+ 	</select>
+
+ </mapper> 	
